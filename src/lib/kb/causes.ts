@@ -20,8 +20,9 @@ export type Tenant = { handle: string; name: string; locale: string; form: 'book
 export type Cause = 'parser' | 'hint';
 export const CAUSES: readonly Cause[] = ['parser', 'hint'];
 
-// What each booking form prints under its date field.
-const DATE_HINT: Record<Tenant['form'], string> = {
+// What booking-v3 printed while the reports in #4471 were arriving. Keep this historical value
+// separate from dateHintForTenant: CauseTable uses it to explain the incident after the fix ships.
+const HISTORICAL_DATE_HINT: Record<Tenant['form'], string> = {
   'booking-v2': 'DD/MM/YYYY',
   'booking-v3': 'MM/DD/YYYY',
 };
@@ -34,12 +35,31 @@ export function dayFirst(locale: string): boolean {
   return order.indexOf('day') < order.indexOf('month');
 }
 
-// The shared parser reads every date month first. A day-first tenant's dates come out flipped:
+// The booking form and parser both take their order from the tenant, not a global default.
+export function dateHintForTenant(t: Tenant): string {
+  return dayFirst(t.locale) ? 'DD/MM/YYYY' : 'MM/DD/YYYY';
+}
+
+export type ParsedDate = { year: number; month: number; day: number };
+
+export function parseDateForTenant(value: string, t: Tenant): ParsedDate {
+  const parts = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!parts) throw new Error(`Invalid date: ${value}`);
+
+  const [, first, second, year] = parts;
+  const day = dayFirst(t.locale) ? Number(first) : Number(second);
+  const month = dayFirst(t.locale) ? Number(second) : Number(first);
+  if (month < 1 || month > 12 || day < 1 || day > 31) throw new Error(`Invalid date: ${value}`);
+
+  return { year: Number(year), month, day };
+}
+
+// The reports below were created before this fix. A day-first tenant's dates came out flipped:
 // that is `parser`. Through booking-v3's form the tenant's people type what the hint tells them,
 // month first, and the form reads it the tenant's way: that is `hint`, a different bug.
 export function causeOf(r: Pick<Report, 'channel'>, t: Tenant | undefined): Cause | null {
   if (!t || !dayFirst(t.locale)) return null;
-  return r.channel === 'form' && DATE_HINT[t.form].startsWith('MM') ? 'hint' : 'parser';
+  return r.channel === 'form' && HISTORICAL_DATE_HINT[t.form].startsWith('MM') ? 'hint' : 'parser';
 }
 
 export function sameCause(a: Pick<Report, 'channel'>, ta: Tenant | undefined, b: Pick<Report, 'channel'>, tb: Tenant | undefined): boolean {

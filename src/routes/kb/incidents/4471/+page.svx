@@ -33,12 +33,12 @@ Known. Split the work into the parser fix and the booking-v3 hint fix.
 
 ### Parser reads day-first dates as month-first
 
-**379 reports** belong to this cause. The shared parser reads dates month first even for day-first
+**Covers: 379 reports.** The shared parser reads dates month first even for day-first
 locales, flipping the day and month in the resulting booking.
 
 ### booking-v3 shows the wrong date hint
 
-**33 reports** belong to this cause. The `booking-v3` form prints `MM/DD/YYYY` for day-first
+**Covers: 33 reports.** The `booking-v3` form prints `MM/DD/YYYY` for day-first
 locales, directing people to enter dates in an order the tenant's locale does not use.
 
 ## Since April

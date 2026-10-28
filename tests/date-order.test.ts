@@ -29,6 +29,10 @@ test('parser reads a day-first date in the tenant order', () => {
   });
 });
 
+test('parser rejects an impossible calendar date', () => {
+  assert.throws(() => parseDateForTenant('31/04/2026', dayFirstV3), /Invalid date/);
+});
+
 test('parser keeps month-first order for a month-first tenant', () => {
   assert.deepEqual(parseDateForTenant('04/07/2026', monthFirstV3), {
     year: 2026,

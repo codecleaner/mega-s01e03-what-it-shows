@@ -51,6 +51,15 @@ export function parseDateForTenant(value: string, t: Tenant): ParsedDate {
   const month = dayFirst(t.locale) ? Number(second) : Number(first);
   if (month < 1 || month > 12 || day < 1 || day > 31) throw new Error(`Invalid date: ${value}`);
 
+  const calendarDate = new Date(Date.UTC(Number(year), month - 1, day));
+  if (
+    calendarDate.getUTCFullYear() !== Number(year) ||
+    calendarDate.getUTCMonth() !== month - 1 ||
+    calendarDate.getUTCDate() !== day
+  ) {
+    throw new Error(`Invalid date: ${value}`);
+  }
+
   return { year: Number(year), month, day };
 }
 

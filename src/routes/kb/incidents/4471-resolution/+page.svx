@@ -17,7 +17,8 @@ and booking-form behavior behind the reports merged into #4471.
 - **379 reports:** the parser reads day-first dates as month-first.
 - **33 reports:** `booking-v3` shows the `MM/DD/YYYY` hint to day-first tenants.
 
-The two tracking tickets are complete. The original incident page retains the computed breakdown;
-this record marks the desk follow-up as finished.
+The two tracking tickets are complete. The parser and date hint now use tenant date order;
+`tests/date-order.test.ts` verifies day-first and month-first parsing. The original incident page
+retains the computed breakdown, and this record marks the desk follow-up as finished.
 
 <RenderStamp {signature} />

@@ -1,0 +1,23 @@
+---
+layout: runbook
+title: '#4471 · resolution record'
+owner: support desk
+status: resolved
+reviewed: 2026-10-28
+signature: codecleaner
+---
+
+<script>
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+The incident was split into two separately tracked causes after the desk reviewed the tenant locale
+and booking-form behavior behind the reports merged into #4471.
+
+- **379 reports:** the parser reads day-first dates as month-first.
+- **33 reports:** `booking-v3` shows the `MM/DD/YYYY` hint to day-first tenants.
+
+The two tracking tickets are complete. The original incident page retains the computed breakdown;
+this record marks the desk follow-up as finished.
+
+<RenderStamp {signature} />

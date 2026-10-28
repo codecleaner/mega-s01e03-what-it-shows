@@ -1,0 +1,54 @@
+---
+layout: runbook
+title: '#4471 · dates land on the wrong day'
+owner: support desk
+status: known
+reviewed: 2026-10-28
+signature: codecleaner
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+Since April, people have told us their bookings land on the wrong day. By 4 October the desk
+had **412 unique reports** merged into #4471.
+
+**Merged as one issue, but it contains two causes.** Both affect tenants whose locale writes the
+day before the month. The shared parser reads every date month first. Separately, `booking-v3`
+shows a `MM/DD/YYYY` hint to those tenants, so their input is interpreted using the wrong order.
+
+<Callout>
+Known. Split the work into the parser fix and the booking-v3 hint fix.
+</Callout>
+
+## What was merged
+
+<CauseTable ticket={4471} />
+
+## Problems to file
+
+### Parser reads day-first dates as month-first
+
+**379 reports** belong to this cause. The shared parser reads dates month first even for day-first
+locales, flipping the day and month in the resulting booking.
+
+### booking-v3 shows the wrong date hint
+
+**33 reports** belong to this cause. The `booking-v3` form prints `MM/DD/YYYY` for day-first
+locales, directing people to enter dates in an order the tenant's locale does not use.
+
+## Since April
+
+<QueueTimeline ticket={4471} />
+
+## Lessons
+
+- A large ticket can contain more than one cause. Group reports by tenant behavior, not only by intake tag.
+- Keep each cause in its own ticket so engineering can count and fix it independently.
+- Preserve the computed report counts in the component-backed table.
+
+<RenderStamp {signature} />
